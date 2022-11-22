@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script defer src="./index.js"></script>
+    <link rel="stylesheet" href="./main.css">
+</head>
+<body>
+    <div class="container">
+        <div class="popup">
+            <div class="form">
+                <img class="btn-close" src="./static/add.png" alt="close">
+                <h2 class="form-head">
+                    Add new todo
+                </h2>
+                <div class="form-body">
+                    <input type="text" id="category" placeholder="Category. Etc: Marketing..." />
+                    <input type="text" id="title" placeholder="Title"/>
+                    <textarea id="content" placeholder="Content" rows="4"></textarea>
+                    <input type="button" id="submit" value="Submit">
+                </div>
+            </div>
+        </div>
+        <div class="header">
+            <div class="head">
+                <div class="logo">
+                    <img src="./static/logo.png" alt="logo">
+                </div>
+                <p class="tagline">
+                    Let's get shit done!
+                    <img src="./static/piece.png" alt="piece" class="icon">
+                </p>
+            </div>
+            <div class="btn btn-add">
+                <img src="./static/add.png" alt="">
+                <span>New task</span>
+            </div>
+        </div>
+        <div class="body">
+            <div class="col">
+                <div class="col-head bg-blue">
+                    <span class="title">
+                        Todo
+                    </span>
+                    <span class="counter">
+                        3
+                    </span>
+                </div>
+                <div class="col-divider bg-blue"></div>
+                <div class="col-body">
+                    <div class="box">
+                        <div class="box-head">
+                            <div class="box-title">
+                                <div class="category">Marketing</div>
+                                <h3 class="title">Write SEO article for new product</h3>
+                            </div>
+                            <div class="box-action">
+                                <div class="icon">
+                                    <img src="./static/Edit.png" alt="edit">
+                                </div>
+                                <div class="icon">
+                                    <img src="./static/Delete.png" alt="delete">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-divider"></div>
+                        <div class="box-body">
+                            <p class="box-desc">
+                                This is an existential moment for effective altruism and the rationalist community writ-large.
+                            </p>
+                            <div class="box-time">
+                                <img src="./static/time.png" alt="time">
+                                <span>June 30, 2022</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-head">
+                            <div class="box-title">
+                                <div class="category">Marketing</div>
+                                <h3 class="title">Write SEO article for new product</h3>
+                            </div>
+                            <div class="box-action">
+                                <div class="icon">
+                                    <img src="./static/Edit.png" alt="edit">
+                                </div>
+                                <div class="icon">
+                                    <img src="./static/Delete.png" alt="delete">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-divider"></div>
+                        <div class="box-body">
+                            <p class="box-desc">
+                                This is an existential moment for effective altruism and the rationalist community writ-large.
+                            </p>
+                            <div class="box-time">
+                                <img src="./static/time.png" alt="time">
+                                <span>June 30, 2022</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-head">
+                            <div class="box-title">
+                                <div class="category">Marketing</div>
+                                <h3 class="title">Write SEO article for new product</h3>
+                            </div>
+                            <div class="box-action">
+                                <div class="icon">
+                                    <img src="./static/Edit.png" alt="edit">
+                                </div>
+                                <div class="icon">
+                                    <img src="./static/Delete.png" alt="delete">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-divider"></div>
+                        <div class="box-body">
+                            <p class="box-desc">
+                                This is an existential moment for effective altruism and the rationalist community writ-large.
+                            </p>
+                            <div class="box-time">
+                                <img src="./static/time.png" alt="time">
+                                <span>June 30, 2022</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="col-head bg-yellow">
+                    <span class="title">
+                        Doing
+                    </span>
+                    <span class="counter">
+                        3
+                    </span>
+                </div>
+                <div class="col-divider bg-yellow"></div>
+                <div class="col-body"></div>
+            </div>
+            <div class="col">
+                <div class="col-head bg-green">
+                    <span class="title">
+                        Finished
+                    </span>
+                    <span class="counter">
+                        3
+                    </span>
+                </div>
+                <div class="col-divider bg-green"></div>
+                <div class="col-body"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
