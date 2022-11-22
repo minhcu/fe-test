@@ -54,6 +54,14 @@ h3 {
     display: block!important;
     opacity: 1!important;
 }
+.valid {
+    border: 2px solid var(--green);
+    border-radius: 5px;
+}
+.invalid {
+    border: 2px solid red;
+    border-radius: 5px;
+}
 /* form */
 .popup {
     position: absolute;
