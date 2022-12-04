@@ -5,13 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script defer src="./form.js"></script>
     <script defer src="./index.js"></script>
     <link rel="stylesheet" href="./main.css">
 </head>
 <body>
     <div class="container">
-        <div class="popup">
-            <div class="form">
+        <div class="popup visible">
+            <form class="form">
                 <img class="btn-close" src="./static/add.png" alt="close">
                 <h2 class="form-head">
                     Add new todo
@@ -20,9 +21,9 @@
                     <input type="text" id="category" placeholder="Category. Etc: Marketing..." />
                     <input type="text" id="title" placeholder="Title"/>
                     <textarea id="content" placeholder="Content" rows="4"></textarea>
-                    <input type="button" id="submit" value="Submit">
+                    <input type="submit" id="submit" value="Submit">
                 </div>
-            </div>
+            </form>
         </div>
         <div class="header">
             <div class="head">
