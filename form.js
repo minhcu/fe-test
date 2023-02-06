@@ -2,8 +2,16 @@ const form = {
     selectors: {
         popup: '.popup',
         form: '.form',
+        formAdd: {
+            selector: '.form-add',
+            inputs: ['#category', '#title', '#content'],
+        },
+        formEdit: {
+            selector: '.form-edit',
+            inputs: ['#edit-category', '#edit-title', '#edit-content'],
+        },
         closeBtn: '.btn-close',
-        inputs: ['#category', '#title', '#content'],
+        todo: null,
     },
     validator: {
         validate: function(inputElement, rule) {
@@ -27,36 +35,54 @@ const form = {
     },
     handleInput: function(rules) {
         rules.forEach(rule => {
-            const inputElement = document.querySelector(rule.selector);
-
+            const inputElement = $(rule.selector);
             inputElement.onblur = () => this.validator.validate(inputElement, rule);
-
             inputElement.oninput = () => inputElement.classList.remove('invalid');
         })
     },
-    handleSubmit: function(e, rules) {
+    handleDate() {
+        const date = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const time = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+        return time;
+    },
+    handleFormData(inputElements) {
+        const formData = inputElements.reduce(function(value, input) {
+            value[input.dataset.key] = input.value;
+            return value;
+        }, {})
+        const time = this.handleDate();
+        const data = {
+            ...formData,
+            time: time,
+            state: formData.state || 0,
+            id: ('id-' + Math.random()).split('.').join(''),
+        }
+        return data;
+    },
+    handleSubmit: function(e, rules, type) {
         e.preventDefault();
         let isFormValid = true;
         rules.forEach(rule => {
-            const inputElement = document.querySelector(rule.selector);
+            const inputElement = $(rule.selector);
             const isValid = this.validator.validate(inputElement, rule);
             if (!isValid) return isFormValid = false;
         });
 
         if (isFormValid) {
-            // Get input elements
-            const inputElements = this.selectors.inputs.map(selector => document.querySelector(selector));
-
-            // Get input value
-            const formData = inputElements.reduce(function(value, input) {
-                value[input.id] = 'test';
-                return value;
-            }, {})
-
+            let formData = {};
+            const inputElements = rules.map(rule => $(rule.selector));
+            formData = this.handleFormData(inputElements);
+            if (this.todo) { 
+                const radioInputs = $('.select').querySelector('input:checked');
+                formData = {...formData, id: this.todo.id, state: Number.parseInt(radioInputs.value)};
+                this.todo = null;
+            }
             // Dispatch data
-            const event = new CustomEvent('formSubmit', {detail: formData})
+            const event = new CustomEvent(type, {detail: formData})
             window.dispatchEvent(event);
         }
+        return isFormValid;
     },
     clearForm: function(inputElements) {
         inputElements.forEach(element => {
@@ -65,30 +91,53 @@ const form = {
             element.value = '';
         })
     },
-    handleEvent: function(rules) {
-        const popup = document.querySelector(this.selectors.popup);
-        const form = document.querySelector(this.selectors.form);
-        const closeBtn = document.querySelector(this.selectors.closeBtn);
+    handleEvent: function(formSelector, rules, type) {
+        const popup = $(this.selectors.popup);
+        const form = $(formSelector);
+        const closeBtn = form.querySelector('.btn-close');
+        const inputElements = rules.map(rule => $(rule.selector));
 
-        // Handle submit
-        form.onsubmit = (e) => this.handleSubmit(e, rules);
-
-        // Handle close form
-        closeBtn.onclick = (e) => {
-            const inputElements = this.selectors.inputs.map(selector => document.querySelector(selector));
+        // Prevent form close when click on form
+        form.onmousedown = (e) => e.stopPropagation();
+        form.onsubmit = (e) => {
+            const isValid = this.handleSubmit(e, rules, type);
+            if (!isValid) return;
             this.clearForm(inputElements);
             popup.classList.remove('visible');
+            form.classList.remove('visible');
         }
-        form.onclick = (e) => e.stopPropagation();
 
-        popup.onclick = () => popup.classList.remove('visible');
+        // Get data from todo item for editting
+        window.addEventListener('editTodo', (e) => {
+            this.todo = e.detail;
+        });
+
+        closeBtn.onclick = () => {
+            this.clearForm(inputElements);
+            popup.classList.remove('visible');
+            form.classList.remove('visible');
+            this.todo = null;
+        }
+        popup.onmousedown = () => {
+            // Clear form when close popup
+            const inputSelector = [...this.selectors.formAdd.inputs, ...this.selectors.formEdit.inputs].map(selector => $(selector));
+            this.clearForm(inputSelector);
+            popup.classList.remove('visible');
+            form.classList.remove('visible');
+            this.todo = null;
+        }
+
     },
     start: function() {
-        const selectors = this.selectors;
         const isRequired = this.validator.isRequired;
-        const rules = selectors.inputs.map(selector => isRequired(selector));
-        this.handleInput(rules);
-        this.handleEvent(rules);
+
+        const formAdd = this.selectors.formAdd;
+        const formAddRules = formAdd.inputs.map(selector => isRequired(selector));
+        const formEdit = this.selectors.formEdit;
+        const formEditRules = formEdit.inputs.map(selector => isRequired(selector));
+        this.handleInput(formAddRules);
+        this.handleEvent(formAdd.selector, formAddRules, 'formAdd');
+        this.handleInput(formEditRules);
+        this.handleEvent(formEdit.selector, formEditRules, 'formEdit');
     },
 }
-form.start();

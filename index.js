@@ -1,5 +1,6 @@
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
 // TODO: chia todo theo 3 state
-
 const app = {
     data: {
         todos: [
@@ -9,6 +10,7 @@ const app = {
                 content: 'This is an existential moment for effective altruism and the rationalist community writ-large.',
                 time: 'June 30, 2022',
                 state: 0,
+                id: 'id-1',
             },
             {
                 category: 'Marketing',
@@ -16,6 +18,7 @@ const app = {
                 content: 'This is an existential moment for effective altruism and the rationalist community writ-large.',
                 time: 'June 30, 2022',
                 state: 1,
+                id: 'id-2',
             },
             {
                 category: 'Marketing',
@@ -23,20 +26,28 @@ const app = {
                 content: 'This is an existential moment for effective altruism and the rationalist community writ-large.',
                 time: 'June 30, 2022',
                 state: 2,
+                id: 'id-3',
             },
         ],
     },
     selector: {
         openformBtn: '.btn-add',
-        popup: '.popup'
+        popup: '.popup',
+        deleteBtn: '.delete-btn',
+        containerList: ['#todo', '#doing', '#finished'],
     },
-    getElement: function (selector) {
-        const ele = document.querySelector(selector);
-        return ele;
+    setTodos: function() {
+        const json = JSON.stringify(this.data);
+        localStorage.setItem('todos', json);
+    },
+    getTodos: function() {
+        const json = localStorage.getItem('todos');
+        if (!json) return;
+        this.data = JSON.parse(json);
     },
     htmlConvert: function (item) {
         const html = `
-        <div class="box">
+        <div class="box" id="${item.id}">
             <div class="box-head">
                 <div class="box-title">
                     <div class="category">${item.category}</div>
@@ -44,16 +55,16 @@ const app = {
                 </div>
                 <div class="box-action">
                     <div class="icon">
-                        <img src="./static/Edit.png" alt="edit">
+                        <img class="edit-btn" src="./static/Edit.png" alt="edit" data-id="${item.id}">
                     </div>
                     <div class="icon">
-                        <img src="./static/Delete.png" alt="delete">
+                        <img class="delete-btn" src="./static/Delete.png" alt="delete" data-id="${item.id}">
                     </div>
                 </div>
             </div>
             <div class="box-divider"></div>
             <div class="box-body">
-                <p class="box-desc">
+                <p class="box-desc content">
                     ${item.content}
                 </p>
                 <div class="box-time">
@@ -65,30 +76,131 @@ const app = {
         `
         return html;
     },
+    deleteTodos: function(id) {
+        const selector = '#' + id;
+        const element = $(selector);
+        // Remove from UI
+        element.remove();
+        // Remove from data
+        this.data.todos = this.data.todos.filter(todo => todo.id !== id);
+    },
+    addTodos: function(todo) {
+        const container = $('#todo');
+        const html = this.htmlConvert(todo);
+        // Add to UI
+        container.innerHTML = container.innerHTML + html;
+        this.handleEvent();
+        // Add to data
+        this.data.todos.push(todo);
+    },
+    editTodos: function(data) {
+        const selector = '#' + data.id;
+        const element = $(selector);
+        const oldTodo = this.data.todos.find(todo => todo.id === data.id);
+        if (oldTodo.state != data.state) {
+            const oldContainer = $(this.selector.containerList[oldTodo.state]);
+            const newContainer = $(this.selector.containerList[data.state]);
+            oldContainer.removeChild(element);
+            newContainer.appendChild(element);
+        }
+        for (let key in data) {
+            if (key === 'id' || key === 'time' || key === 'state') continue;
+            element.querySelector(`.${key}`).innerHTML = data[key];
+        }
+        this.data.todos = this.data.todos.map(todo => {
+            if (todo.id === data.id) {
+                return data;
+            }
+            return todo;
+        });
+    },
+    updateCounter() {
+        const todoCounter = $('#todo-counter');
+        const doingCounter = $('#doing-counter');
+        const finishedCounter = $('#finished-counter');
+        const todoList = this.data.todos;
+        todoCounter.innerHTML = todoList.filter(todo => todo.state === 0).length;
+        doingCounter.innerHTML = todoList.filter(todo => todo.state === 1).length;
+        finishedCounter.innerHTML = todoList.filter(todo => todo.state === 2).length;
+    },
     handleEvent: function() {
-        const popup = this.getElement(this.selector.popup);
-        const addBtn = this.getElement(this.selector.openformBtn);
-        //
-        addBtn.onclick = () => popup.classList.add('visible');
+        const popup = $(this.selector.popup);
+        const addBtn = $(this.selector.openformBtn);
+        const form = $$('.form');
+        const deleteBtnList = $$('.delete-btn');
+        const editBtnList = $$('.edit-btn');
 
-        // Handles submit data
-        window.addEventListener('formSubmit', (e) => console.log(e.detail));
+        addBtn.onclick = () => {
+            popup.classList.add('visible');
+            form[0].classList.add('visible');
+            // Clear all valid and invalid class before open edit form, due to form validation will add valid and invalid class
+            Array.from($$('.valid')).forEach(item => item.classList.remove('valid'));
+            Array.from($$('.invalid')).forEach(item => item.classList.remove('invalid'));
+        }
+
+        window.addEventListener('formAdd', (e) => {
+            e.stopImmediatePropagation();
+            const data = e.detail;
+            this.addTodos(data);
+            this.setTodos();
+            this.updateCounter();
+        });
+        window.addEventListener('formEdit', (e) => {
+            e.stopImmediatePropagation();
+            const data = e.detail;
+            this.editTodos(data);
+            this.setTodos();
+            this.updateCounter();
+        });
+
+        Array.from(deleteBtnList).forEach(btn => {
+            btn.onclick = (e) => {
+                const id = e.target.dataset.id;
+                this.deleteTodos(id);
+                this.setTodos();
+            }
+        });
+
+        Array.from(editBtnList).forEach(btn => {
+            btn.onclick = (e) => {
+                // Clear all valid and invalid class before open edit form, due to form validation will add valid and invalid class
+                Array.from($$('.valid')).forEach(item => item.classList.remove('valid'));
+                Array.from($$('.invalid')).forEach(item => item.classList.remove('invalid'));
+                popup.classList.add('visible');
+                form[1].classList.add('visible');
+                const id = e.target.dataset.id;
+                const todo = this.data.todos.find(todo => todo.id === id);
+                const editFormSelector = ['#edit-category', '#edit-title', '#edit-content'];
+                const radioSelector = '.select';
+                editFormSelector.forEach((selector, index) => {
+                    $(selector).value = todo[Object.keys(todo)[index]];
+                });
+                const radioInputs = $(radioSelector).querySelectorAll('input');
+                Array.from(radioInputs).find(input => input.value == todo.state).checked = true;
+                const event = new CustomEvent('editTodo', {detail: todo})
+                window.dispatchEvent(event);
+            }
+        })
     },
     render() {
         const _this = this;
         const data = this.data;
-        const containerList = ['#todo', '#doing', '#finished']
+        const containerList = [...this.selector.containerList];
 
+        this.updateCounter();
         for (let i = 0; i < 3; i++) {
-            const container = this.getElement(containerList[i]);
+            const container = $(containerList[i]);
             const filteredTodo = data.todos.filter(todo => todo.state % 3 === i);
             const html = filteredTodo.map(todo => _this.htmlConvert(todo)).join('');
             container.innerHTML = html;
         }
     },
     start: function() {
-        this.handleEvent();
+        // localStorage.setItem('todos', JSON.stringify(this.data));
+        form.start();
+        this.getTodos();
         this.render();
+        this.handleEvent();
     }
 }
 app.start();

@@ -11,16 +11,42 @@
 </head>
 <body>
     <div class="container">
-        <div class="popup visible">
-            <form class="form">
+        <div class="popup">
+            <form class="form form-add">
                 <img class="btn-close" src="./static/add.png" alt="close">
                 <h2 class="form-head">
                     Add new todo
                 </h2>
                 <div class="form-body">
-                    <input type="text" id="category" placeholder="Category. Etc: Marketing..." />
-                    <input type="text" id="title" placeholder="Title"/>
-                    <textarea id="content" placeholder="Content" rows="4"></textarea>
+                    <input type="text" data-key="category" id="category" placeholder="Category. Etc: Marketing..." />
+                    <input type="text" data-key="title" id="title" placeholder="Title"/>
+                    <textarea id="content" data-key="content" placeholder="Content" rows="4"></textarea>
+                    <input type="submit" id="submit" value="Submit">
+                </div>
+            </form>
+            <form class="form form-edit">
+                <img class="btn-close" src="./static/add.png" alt="close">
+                <h2 class="form-head">
+                    Edit todo
+                </h2>
+                <div class="form-body">
+                    <input type="text" data-key="category" id="edit-category" placeholder="Category. Etc: Marketing..." />
+                    <input type="text" data-key="title" id="edit-title" placeholder="Title"/>
+                    <textarea id="edit-content" data-key="content" placeholder="Content" rows="4"></textarea>
+                    <div data-key="state" id="select" class="select">
+                        <div>
+                            <input type="radio" name="state" id="" value="0">
+                            <label for="0">To do</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="state" id="" value="1">
+                            <label for="1">Doing</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="state" id="" value="2">
+                            <label for="2">Finished</label>
+                        </div>
+                    </div>
                     <input type="submit" id="submit" value="Submit">
                 </div>
             </form>
@@ -46,7 +72,7 @@
                     <span class="title">
                         Todo
                     </span>
-                    <span class="counter">
+                    <span id="todo-counter" class="counter">
                         3
                     </span>
                 </div>
@@ -58,7 +84,7 @@
                     <span class="title">
                         Doing
                     </span>
-                    <span class="counter">
+                    <span id="doing-counter" class="counter">
                         3
                     </span>
                 </div>
@@ -70,7 +96,7 @@
                     <span class="title">
                         Finished
                     </span>
-                    <span class="counter">
+                    <span id="finished-counter" class="counter">
                         3
                     </span>
                 </div>

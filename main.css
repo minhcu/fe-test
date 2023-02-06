@@ -64,7 +64,7 @@ h3 {
 }
 /* form */
 .popup {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -84,6 +84,7 @@ h3 {
     width: 100%;
     max-width: 500px;
     background-color: #fff;
+    display: none;
 }
 .form img {
     position: absolute;
@@ -97,11 +98,22 @@ h3 {
 .form-head {
     text-align: center;
 }
-.form-body input,
+.form-body > input,
 .form-body textarea {
     display: block;
     width: 100%;
     margin-bottom: 10px;
+}
+.form-body .select,
+.form-body .select div {
+    display: flex;
+    flex: 1;
+}
+.form-body .select div {
+    justify-content: center;
+}
+.form-body .select {
+    justify-content: space-between;
 }
 
 /* head */
@@ -192,6 +204,7 @@ p {
     padding: 16px 24px;
     margin-bottom: 22px;
     border-radius: 8px;
+    border: 1px solid grey;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
 }
 .box-head {
