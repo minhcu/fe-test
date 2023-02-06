@@ -56,7 +56,7 @@ const form = {
             ...formData,
             time: time,
             state: formData.state || 0,
-            id: ('id-' + Math.random()).split('.').join(''),
+            id: ('id-' + Math.random()).split('.').join(''), // remove dot in id
         }
         return data;
     },
@@ -73,12 +73,13 @@ const form = {
             let formData = {};
             const inputElements = rules.map(rule => $(rule.selector));
             formData = this.handleFormData(inputElements);
+
+            // this.todo is null when add new todo, not null when edit todo
             if (this.todo) { 
                 const radioInputs = $('.select').querySelector('input:checked');
                 formData = {...formData, id: this.todo.id, state: Number.parseInt(radioInputs.value)};
                 this.todo = null;
             }
-            // Dispatch data
             const event = new CustomEvent(type, {detail: formData})
             window.dispatchEvent(event);
         }
@@ -108,6 +109,7 @@ const form = {
         }
 
         // Get data from todo item for editting
+        // Should have just get the id but anyway, lazy to change
         window.addEventListener('editTodo', (e) => {
             this.todo = e.detail;
         });
@@ -118,8 +120,7 @@ const form = {
             form.classList.remove('visible');
             this.todo = null;
         }
-        popup.onmousedown = () => {
-            // Clear form when close popup
+        popup.onmousedown = () => { // Make popup close when mouse down on popup, not when mouse up
             const inputSelector = [...this.selectors.formAdd.inputs, ...this.selectors.formEdit.inputs].map(selector => $(selector));
             this.clearForm(inputSelector);
             popup.classList.remove('visible');

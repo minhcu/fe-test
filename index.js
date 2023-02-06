@@ -79,18 +79,14 @@ const app = {
     deleteTodos: function(id) {
         const selector = '#' + id;
         const element = $(selector);
-        // Remove from UI
         element.remove();
-        // Remove from data
         this.data.todos = this.data.todos.filter(todo => todo.id !== id);
     },
     addTodos: function(todo) {
         const container = $('#todo');
         const html = this.htmlConvert(todo);
-        // Add to UI
         container.innerHTML = container.innerHTML + html;
         this.handleEvent();
-        // Add to data
         this.data.todos.push(todo);
     },
     editTodos: function(data) {
@@ -104,9 +100,11 @@ const app = {
             newContainer.appendChild(element);
         }
         for (let key in data) {
+            // Skip id, time, state as they are not in the element
             if (key === 'id' || key === 'time' || key === 'state') continue;
             element.querySelector(`.${key}`).innerHTML = data[key];
         }
+        // Should have check if the data is changed, if not, no need to update the data but I'm lazy
         this.data.todos = this.data.todos.map(todo => {
             if (todo.id === data.id) {
                 return data;
@@ -139,6 +137,7 @@ const app = {
         }
 
         window.addEventListener('formAdd', (e) => {
+            // Prevent formAdd event trigger twice
             e.stopImmediatePropagation();
             const data = e.detail;
             this.addTodos(data);
@@ -146,6 +145,7 @@ const app = {
             this.updateCounter();
         });
         window.addEventListener('formEdit', (e) => {
+            // Prevent formEdit event trigger twice 
             e.stopImmediatePropagation();
             const data = e.detail;
             this.editTodos(data);
@@ -167,6 +167,8 @@ const app = {
                 Array.from($$('.valid')).forEach(item => item.classList.remove('valid'));
                 Array.from($$('.invalid')).forEach(item => item.classList.remove('invalid'));
                 popup.classList.add('visible');
+
+                // Form[1] refer to the edit form
                 form[1].classList.add('visible');
                 const id = e.target.dataset.id;
                 const todo = this.data.todos.find(todo => todo.id === id);
@@ -177,6 +179,8 @@ const app = {
                 });
                 const radioInputs = $(radioSelector).querySelectorAll('input');
                 Array.from(radioInputs).find(input => input.value == todo.state).checked = true;
+
+                // Sending todo data to form validation
                 const event = new CustomEvent('editTodo', {detail: todo})
                 window.dispatchEvent(event);
             }
@@ -188,6 +192,7 @@ const app = {
         const containerList = [...this.selector.containerList];
 
         this.updateCounter();
+        // 3 refers to 3 states: Doing / Todo / Finished
         for (let i = 0; i < 3; i++) {
             const container = $(containerList[i]);
             const filteredTodo = data.todos.filter(todo => todo.state % 3 === i);
